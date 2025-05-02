@@ -496,4 +496,3 @@ const handleAddStock = () => {
     </div>
   );
 }
-// Modifica di test
