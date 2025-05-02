@@ -497,5 +497,3 @@ const handleAddStock = () => {
   );
 }
 // Modifica di test
-git config --global user.email "coccoballo03@gmail.com"
-  git config --global user.name "Thetown7"
