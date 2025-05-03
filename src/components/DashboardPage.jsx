@@ -6,6 +6,11 @@ export default function DashboardPage({ onLogout }) {
   const [showProductForm, setShowProductForm] = useState(false);
   const [showPreviewPanel, setShowPreviewPanel] = useState(false);
   const [openOrderModal, setOpenOrderModal] = useState(null);
+  const [showStockForm, setShowStockForm] = useState(false);
+  const [openStockModal, setOpenStockModal] = useState(false);
+  const [editingStock, setEditingStock] = useState(null);
+  
+
 
   // Ordini Attivi
   const [activeOrders, setActiveOrders] = useState([
@@ -56,6 +61,17 @@ const [chatMessages, setChatMessages] = useState([]);
 const [showChat, setShowChat] = useState(false);
 const [newMessage, setNewMessage] = useState('');
 
+// Gestione Modifica Stock
+const handleEditStock = (item) => {
+  setEditingStock({ ...item });
+};
+
+const handleUpdateStock = () => {
+  setStockItems((prev) =>
+    prev.map((item) => (item.name === editingStock.name ? editingStock : item))
+  );
+  setEditingStock(null);
+};
 
   // Gestione chiusura ordine
   const handleCloseOrder = (order) => {
@@ -117,6 +133,7 @@ const [newMessage, setNewMessage] = useState('');
     alert('Compila tutti i campi per aggiungere il prodotto.');
   }
 };
+
 
 
   
@@ -288,10 +305,16 @@ const handleAddStock = () => {
       
       {/* Sezione Ordini Attivi */}
       <details open className="bg-white border rounded-2xl shadow p-4 mb-6">
-        <summary className="flex items-center gap-2 cursor-pointer">
-          <span className="h-6 w-6 bg-[#D39BFF] rounded-full" />
-          <span className="text-lg font-semibold text-[#D39BFF]">Ordini Attivi</span>
-        </summary>
+      <summary className="flex items-center gap-2 cursor-pointer">
+  <span className="h-6 w-6 bg-[#D39BFF] rounded-full" />
+  <span className="text-lg font-semibold text-[#D39BFF]">
+    Ordini Attivi
+  </span>
+  <span className="ml-auto text-sm text-[#D39BFF] font-bold">
+    ({activeOrders.length})
+  </span>
+</summary>
+
         <ul className="divide-y divide-gray-200 mt-2">
           {activeOrders.map((order) => (
             <li key={order.id} className="py-2">
@@ -338,85 +361,145 @@ const handleAddStock = () => {
       </details>
 
       {/* Sezione Stock Prodotti */}
-     <details className="bg-white border rounded-2xl shadow p-4 mb-6">
+     {/* Sezione Stock Prodotti */}
+<details className="bg-white border rounded-2xl shadow p-4 mb-6">
   <summary className="flex items-center gap-2 cursor-pointer">
     <span className="h-6 w-6 bg-[#D39BFF] rounded-full" />
     <span className="text-lg font-semibold text-[#D39BFF]">Stock Prodotti</span>
   </summary>
-  <div className="mt-4 mb-2 space-y-2">
-    <input
-      type="text"
-      placeholder="Nome per Stock"
-      className="w-full border p-2 rounded-xl"
-      value={newStock.name}
-      onChange={(e) => setNewStock((s) => ({ ...s, name: e.target.value }))}
-    />
-    <select
-      className="w-full border p-2 rounded-xl"
-      value={newStock.type || ''}
-      onChange={(e) => setNewStock((s) => ({ ...s, type: e.target.value }))}
-    >
-      <option value="">Seleziona Categoria</option>
-      <option value="Cake">Cake</option>
-      <option value="Insalate">Insalate</option>
-      <option value="Speciali">Speciali</option>
-    </select>
-    <input
-      type="number"
-      placeholder="Stock porzioni da 2"
-      className="w-full border p-2 rounded-xl"
-      value={newStock.stock2}
-      onChange={(e) => setNewStock((s) => ({ ...s, stock2: e.target.value }))}
-    />
-    <input
-      type="number"
-      placeholder="Stock porzioni da 5"
-      className="w-full border p-2 rounded-xl"
-      value={newStock.stock5}
-      onChange={(e) => setNewStock((s) => ({ ...s, stock5: e.target.value }))}
-    />
-    <input
-  type="number"
-  placeholder="Prezzo porzione da 2"
-  className="w-full border p-2 rounded-xl"
-  value={newStock.price2}
-  onChange={(e) => setNewStock((s) => ({ ...s, price2: e.target.value }))}
-  step="0.01"
-/>
-<input
-  type="number"
-  placeholder="Prezzo porzione da 5"
-  className="w-full border p-2 rounded-xl"
-  value={newStock.price5}
-  onChange={(e) => setNewStock((s) => ({ ...s, price5: e.target.value }))}
-  step="0.01"
-/>
 
-    
-    <button
-      onClick={handleAddStock}
-      className="w-full bg-[#D39BFF] text-white py-2 rounded-xl font-semibold"
-    >
-      Aggiorna Stock
-    </button>
-  </div>
+  {/* Lista Stock */}
+<ul className="divide-y divide-gray-200 mt-4">
+  {stockItems.length > 0 ? (
+    stockItems.map((item, idx) => (
+      <li key={idx} className="py-2">
+        <div className="flex justify-between items-center">
+          {/* Info Prodotto */}
+          <div>
+            <p className="font-semibold text-[#D39BFF]">{item.name}</p>
+            <p className="text-xs text-gray-500">
+              Categoria: {item.type}<br />
+              x2: {item.stock2} (prezzo €{item.price2})<br />
+              x5: {item.stock5} (prezzo €{item.price5})
+            </p>
+          </div>
 
- <ul className="divide-y divide-gray-200 mt-2">
-  {stockItems.map((item, idx) => (
-    <li key={idx} className="py-2">
-      <div className="flex justify-between items-center">
-        <div>
-         <p className="text-xs text-gray-400">
-  Categoria: {item.type} | Stock x2: {item.stock2} (prezzo €{item.price2}) | Stock x5: {item.stock5} (prezzo €{item.price5})
-</p>
-
+          {/* Bottone Modifica */}
+          <button
+            onClick={() => handleEditStock(item)}
+            className="flex items-center gap-1 text-sm text-[#D39BFF] hover:text-[#a16bc9] font-semibold"
+          >
+            ✏️ Modifica
+          </button>
         </div>
-      </div>
-    </li>
-  ))}
+      </li>
+    ))
+  ) : (
+    <p className="text-gray-400 text-center mt-2">Nessun prodotto in stock.</p>
+  )}
 </ul>
 
+
+  {/* Bottone per aprire il form */}
+  {!showStockForm && (
+   <button
+   onClick={() => setOpenStockModal(true)}
+   className="w-full bg-[#D39BFF] text-white py-2 rounded-xl font-semibold mt-4"
+ >
+   ➕ Aggiungi Stock
+ </button>
+ 
+  )}
+
+  {/* Form Aggiunta Stock */}
+  {showStockForm && (
+    <div className="mt-4 space-y-2">
+      <input type="text" placeholder="Nome per Stock" className="w-full border p-2 rounded-xl" value={newStock.name} onChange={(e) => setNewStock((s) => ({ ...s, name: e.target.value }))} />
+      <select className="w-full border p-2 rounded-xl" value={newStock.type || ''} onChange={(e) => setNewStock((s) => ({ ...s, type: e.target.value }))}>
+        <option value="">Seleziona Categoria</option>
+        <option value="Cake">Cake</option>
+        <option value="Insalate">Insalate</option>
+        <option value="Speciali">Speciali</option>
+      </select>
+      <input type="number" placeholder="Stock porzioni da 2" className="w-full border p-2 rounded-xl" value={newStock.stock2} onChange={(e) => setNewStock((s) => ({ ...s, stock2: e.target.value }))} />
+      <input type="number" placeholder="Stock porzioni da 5" className="w-full border p-2 rounded-xl" value={newStock.stock5} onChange={(e) => setNewStock((s) => ({ ...s, stock5: e.target.value }))} />
+      <input type="number" placeholder="Prezzo porzione da 2 (€)" className="w-full border p-2 rounded-xl" value={newStock.price2} onChange={(e) => setNewStock((s) => ({ ...s, price2: e.target.value }))} step="0.01" />
+      <input type="number" placeholder="Prezzo porzione da 5 (€)" className="w-full border p-2 rounded-xl" value={newStock.price5} onChange={(e) => setNewStock((s) => ({ ...s, price5: e.target.value }))} step="0.01" />
+      <button onClick={handleAddStock} className="w-full bg-[#D39BFF] text-white py-2 rounded-xl font-semibold">
+        Salva Stock
+      </button>
+    </div>
+  )}
 </details>
+
+{/* Modale Modifica Stock */}
+<AnimatePresence>
+  {editingStock && (
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50 p-4">
+      <motion.div initial={{ scale: 0.8 }} animate={{ scale: 1 }} exit={{ scale: 0.8 }} transition={{ type: 'spring', stiffness: 300, damping: 20 }} className="bg-white p-6 rounded-2xl max-w-md w-full max-h-[95vh] overflow-y-auto relative">
+        <button onClick={() => setEditingStock(null)} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600">✕</button>
+        <h2 className="text-2xl font-bold text-[#D39BFF] mb-4">Modifica Stock</h2>
+
+        {/* Form modifica */}
+        <input
+          type="text"
+          placeholder="Nome prodotto"
+          className="w-full border p-2 rounded-xl mb-2"
+          value={editingStock.name}
+          onChange={(e) => setEditingStock({ ...editingStock, name: e.target.value })}
+        />
+        <select
+          className="w-full border p-2 rounded-xl mb-2"
+          value={editingStock.type}
+          onChange={(e) => setEditingStock({ ...editingStock, type: e.target.value })}
+        >
+          <option value="">Seleziona Categoria</option>
+          <option value="Cake">Cake</option>
+          <option value="Insalate">Insalate</option>
+          <option value="Speciali">Speciali</option>
+        </select>
+        <input
+          type="number"
+          placeholder="Stock porzioni da 2"
+          className="w-full border p-2 rounded-xl mb-2"
+          value={editingStock.stock2}
+          onChange={(e) => setEditingStock({ ...editingStock, stock2: e.target.value })}
+        />
+        <input
+          type="number"
+          placeholder="Stock porzioni da 5"
+          className="w-full border p-2 rounded-xl mb-2"
+          value={editingStock.stock5}
+          onChange={(e) => setEditingStock({ ...editingStock, stock5: e.target.value })}
+        />
+        <input
+          type="number"
+          placeholder="Prezzo porzione da 2 (€)"
+          className="w-full border p-2 rounded-xl mb-2"
+          value={editingStock.price2}
+          onChange={(e) => setEditingStock({ ...editingStock, price2: e.target.value })}
+        />
+        <input
+          type="number"
+          placeholder="Prezzo porzione da 5 (€)"
+          className="w-full border p-2 rounded-xl mb-4"
+          value={editingStock.price5}
+          onChange={(e) => setEditingStock({ ...editingStock, price5: e.target.value })}
+        />
+
+        {/* Bottone Salva Modifica */}
+        <button
+          onClick={handleUpdateStock}
+          className="w-full bg-[#D39BFF] text-white py-2 rounded-xl font-semibold"
+        >
+          Salva Modifiche
+        </button>
+      </motion.div>
+    </motion.div>
+  )}
+</AnimatePresence>
+
+
 
 
       {/* Modale Dettagli Ordine */}
@@ -449,7 +532,6 @@ const handleAddStock = () => {
   📞 Contatta Cliente
 </button>
 
-
 {showChat && (
   <div className="bg-gray-100 p-4 mt-4 rounded-2xl shadow-inner max-h-60 overflow-y-auto space-y-2">
     <div className="font-semibold mb-2 text-[#D39BFF]">Chat Live con {openOrderModal.nick || 'il Cliente'}</div>
@@ -481,7 +563,7 @@ const handleAddStock = () => {
       </button>
     </div>
   </div>
-)}
+            )}
 
               <hr className="border-gray-200 my-4" />
               <div className="mb-4">
@@ -493,6 +575,41 @@ const handleAddStock = () => {
           </motion.div>
         )}
       </AnimatePresence>
+      
+      {/* Modale Aggiunta Stock */}
+<AnimatePresence>
+  {openStockModal && (
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50 p-4">
+      <motion.div initial={{ scale: 0.8 }} animate={{ scale: 1 }} exit={{ scale: 0.8 }} transition={{ type: 'spring', stiffness: 300, damping: 20 }} className="bg-white p-6 rounded-2xl max-w-md w-full max-h-[95vh] overflow-y-auto relative">
+        
+        <button onClick={() => setOpenStockModal(false)} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600">✕</button>
+        
+        <h2 className="text-2xl font-bold text-[#D39BFF] mb-4 text-center">Aggiungi Nuovo Stock</h2>
+
+        {/* Form di Aggiunta Stock */}
+        <div className="space-y-2">
+          <input type="text" placeholder="Nome per Stock" className="w-full border p-2 rounded-xl" value={newStock.name} onChange={(e) => setNewStock((s) => ({ ...s, name: e.target.value }))} />
+          <select className="w-full border p-2 rounded-xl" value={newStock.type || ''} onChange={(e) => setNewStock((s) => ({ ...s, type: e.target.value }))}>
+            <option value="">Seleziona Categoria</option>
+            <option value="Cake">Cake</option>
+            <option value="Insalate">Insalate</option>
+            <option value="Speciali">Speciali</option>
+          </select>
+          <input type="number" placeholder="Stock porzioni da 2" className="w-full border p-2 rounded-xl" value={newStock.stock2} onChange={(e) => setNewStock((s) => ({ ...s, stock2: e.target.value }))} />
+          <input type="number" placeholder="Prezzo porzione da 2 (€)" className="w-full border p-2 rounded-xl" value={newStock.price2} onChange={(e) => setNewStock((s) => ({ ...s, price2: e.target.value }))} step="0.01" />
+          <input type="number" placeholder="Stock porzioni da 5" className="w-full border p-2 rounded-xl" value={newStock.stock5} onChange={(e) => setNewStock((s) => ({ ...s, stock5: e.target.value }))} />
+          <input type="number" placeholder="Prezzo porzione da 5 (€)" className="w-full border p-2 rounded-xl" value={newStock.price5} onChange={(e) => setNewStock((s) => ({ ...s, price5: e.target.value }))} step="0.01" />
+          
+          <button onClick={() => { handleAddStock(); setOpenStockModal(false); }} className="w-full bg-[#D39BFF] text-white py-2 rounded-xl font-semibold">
+            Salva Stock
+          </button>
+        </div>
+
+      </motion.div>
+    </motion.div>
+  )}
+</AnimatePresence>
+
     </div>
   );
 }
