@@ -1,6 +1,14 @@
 import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { DashboardProvider } from '../../context/DashboardProvider';
+import Header from './Header';
+import ActiveOrders from './Orders/ActiveOrders';
+import CompletedOrders from './Orders/CompletedOrders';
+import StockList from './Stock/StockList';
+
+
+
+
 
 
 export default function DashboardPage({ onLogout }) {
@@ -180,6 +188,11 @@ const handleAddStock = () => {
 
 
   return (
+
+   <DashboardProvider>
+    <Header onLogout={onLogout} />
+
+
     <div className="p-6 max-w-md mx-auto bg-white min-h-screen relative">
       {/* Header */}
       <div className="bg-[#D39BFF] p-4 rounded-b-2xl text-white text-center mb-6 relative">
@@ -222,8 +235,11 @@ const handleAddStock = () => {
         price2: selectedStock.price2,
         price5: selectedStock.price5,
       }));
+      
+
     }
   }}
+  
 >
   <option value="">Seleziona dal Magazzino</option>
   {stockItems.map((item, idx) => (
@@ -318,7 +334,14 @@ const handleAddStock = () => {
 </summary>
 
         <ul className="divide-y divide-gray-200 mt-2">
-          {activeOrders.map((order) => (
+        <ActiveOrders 
+        orders={activeOrders} 
+        onOpen={setOpenOrderModal}
+        calculateTotal={calculateTotal}   //  ← AGGIUNTA
+                     />
+
+
+{/* {activeOrders.map((order) => (
             <li key={order.id} className="py-2">
               <div onClick={() => setOpenOrderModal(order)} className="flex justify-between items-center cursor-pointer">
                 <div>
@@ -331,13 +354,16 @@ const handleAddStock = () => {
                   <span className="text-sm text-gray-500">€{calculateTotal(order)}</span>
                 </div>
               </div>
-            </li>
-          ))}
+            </li> */}
         </ul>
       </details>
+      <CompletedOrders
+  orders={completedOrders}
+  total={totalRevenue}      /* usa la tua variabile incasso */
+/>
 
       {/* Sezione Ordini Totali */}
-      <details className="bg-white border rounded-2xl shadow p-4 mb-6">
+      {/* <details className="bg-white border rounded-2xl shadow p-4 mb-6">
         <summary className="flex items-center gap-2 cursor-pointer">
           <span className="h-6 w-6 bg-gray-300 rounded-full" />
           <span className="text-lg font-semibold text-[#D39BFF]">Ordini Totali</span>
@@ -360,24 +386,33 @@ const handleAddStock = () => {
             </li>
           ))}
         </ul>
-      </details>
+      </details>*/}
 
-      {/* Sezione Stock Prodotti */}
+
+
+      
      {/* Sezione Stock Prodotti */}
-<details className="bg-white border rounded-2xl shadow p-4 mb-6">
-  <summary className="flex items-center gap-2 cursor-pointer">
+     <div className="bg-white border rounded-2xl shadow p-4 mb-6">
+
+ {/* <summary className="flex items-center gap-2 cursor-pointer">
     <span className="h-6 w-6 bg-[#D39BFF] rounded-full" />
     <span className="text-lg font-semibold text-[#D39BFF]">Stock Prodotti</span>
-  </summary>
+  </summary>*/}
+
+  
+  <StockList items={stockItems} onEdit={handleEditStock} />
 
   {/* Lista Stock */}
-<ul className="divide-y divide-gray-200 mt-4">
+
+{/* <ul className="divide-y divide-gray-200 mt-4">
   {stockItems.length > 0 ? (
     stockItems.map((item, idx) => (
       <li key={idx} className="py-2">
         <div className="flex justify-between items-center">
-          {/* Info Prodotto */}
-          <div>
+          
+          
+        {/* Info Prodotto */}
+           {/*<div>
             <p className="font-semibold text-[#D39BFF]">{item.name}</p>
             <p className="text-xs text-gray-500">
               Categoria: {item.type}<br />
@@ -387,7 +422,7 @@ const handleAddStock = () => {
           </div>
 
           {/* Bottone Modifica */}
-          <button
+           {/*<button
             onClick={() => handleEditStock(item)}
             className="flex items-center gap-1 text-sm text-[#D39BFF] hover:text-[#a16bc9] font-semibold"
           >
@@ -412,6 +447,8 @@ const handleAddStock = () => {
  </button>
  
   )}
+  
+
 
   {/* Form Aggiunta Stock */}
   {showStockForm && (
@@ -432,7 +469,9 @@ const handleAddStock = () => {
       </button>
     </div>
   )}
-</details>
+</div>
+
+<h1 className="text-sm text-[#D39BFF] underline"> "TeamFuckYouFarm/FyfeApp 0.01(Beta)" </h1>
 
 {/* Modale Modifica Stock */}
 <AnimatePresence>
@@ -613,5 +652,6 @@ const handleAddStock = () => {
 </AnimatePresence>
 
     </div>
-  );
+    </DashboardProvider>
+);
 }

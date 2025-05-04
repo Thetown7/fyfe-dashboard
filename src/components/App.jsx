@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import LoginPage from './LoginPage';
 import HomePage from './HomePage';
 import ProductsPage from './ProductsPage';
-import DashboardPage from './DashboardPage';
+import DashboardPage from './Dashboard/DashboardPage';
 
 export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
