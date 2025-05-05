@@ -8,7 +8,8 @@ import StockList from './Stock/StockList';
 import ActiveOrdersSection from './Orders/ActiveOrdersSection';
 import CompletedOrdersSection from './Orders/CompletedOrdersSection';
 import StockSection from './Stock/StockSection';
-
+import StockEditModal from './Stock/StockEditModal';
+import StockAddModal from './Stock/StockAddModal';
 
 
 
@@ -357,79 +358,28 @@ const handleAddStock = () => {
   setEditingStock={setEditingStock}
 />
 
-      
+<StockEditModal
+  editingStock={editingStock}
+  setEditingStock={setEditingStock}
+  handleUpdateStock={handleUpdateStock}
+/>
+
+
+<StockAddModal
+  openStockModal={openStockModal}
+  setOpenStockModal={setOpenStockModal}
+  newStock={newStock}
+  setNewStock={setNewStock}
+  handleAddStock={handleAddStock}
+/>
+
 
 
 
 
 <h1 className="text-sm text-[#D39BFF] underline"> "FyfeApp 0.01(Beta)" </h1>
 
-{/* Modale Modifica Stock */}
-<AnimatePresence>
-  {editingStock && (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50 p-4">
-      <motion.div initial={{ scale: 0.8 }} animate={{ scale: 1 }} exit={{ scale: 0.8 }} transition={{ type: 'spring', stiffness: 300, damping: 20 }} className="bg-white p-6 rounded-2xl max-w-md w-full max-h-[95vh] overflow-y-auto relative">
-        <button onClick={() => setEditingStock(null)} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600">✕</button>
-        <h2 className="text-2xl font-bold text-[#D39BFF] mb-4">Modifica Stock</h2>
 
-        {/* Form modifica */}
-        <input
-          type="text"
-          placeholder="Nome prodotto"
-          className="w-full border p-2 rounded-xl mb-2"
-          value={editingStock.name}
-          onChange={(e) => setEditingStock({ ...editingStock, name: e.target.value })}
-        />
-        <select
-          className="w-full border p-2 rounded-xl mb-2"
-          value={editingStock.type}
-          onChange={(e) => setEditingStock({ ...editingStock, type: e.target.value })}
-        >
-          <option value="">Seleziona Categoria</option>
-          <option value="Cake">Cake</option>
-          <option value="Insalate">Insalate</option>
-          <option value="Speciali">Speciali</option>
-        </select>
-        <input
-          type="number"
-          placeholder="Stock porzioni da 2"
-          className="w-full border p-2 rounded-xl mb-2"
-          value={editingStock.stock2}
-          onChange={(e) => setEditingStock({ ...editingStock, stock2: e.target.value })}
-        />
-        <input
-          type="number"
-          placeholder="Stock porzioni da 5"
-          className="w-full border p-2 rounded-xl mb-2"
-          value={editingStock.stock5}
-          onChange={(e) => setEditingStock({ ...editingStock, stock5: e.target.value })}
-        />
-        <input
-          type="number"
-          placeholder="Prezzo porzione da 2 (€)"
-          className="w-full border p-2 rounded-xl mb-2"
-          value={editingStock.price2}
-          onChange={(e) => setEditingStock({ ...editingStock, price2: e.target.value })}
-        />
-        <input
-          type="number"
-          placeholder="Prezzo porzione da 5 (€)"
-          className="w-full border p-2 rounded-xl mb-4"
-          value={editingStock.price5}
-          onChange={(e) => setEditingStock({ ...editingStock, price5: e.target.value })}
-        />
-
-        {/* Bottone Salva Modifica */}
-        <button
-          onClick={handleUpdateStock}
-          className="w-full bg-[#D39BFF] text-white py-2 rounded-xl font-semibold"
-        >
-          Salva Modifiche
-        </button>
-      </motion.div>
-    </motion.div>
-  )}
-</AnimatePresence>
 
 
 
@@ -507,41 +457,8 @@ const handleAddStock = () => {
           </motion.div>
         )}
       </AnimatePresence>
-      
-      {/* Modale Aggiunta Stock */}
-<AnimatePresence>
-  {openStockModal && (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50 p-4">
-      <motion.div initial={{ scale: 0.8 }} animate={{ scale: 1 }} exit={{ scale: 0.8 }} transition={{ type: 'spring', stiffness: 300, damping: 20 }} className="bg-white p-6 rounded-2xl max-w-md w-full max-h-[95vh] overflow-y-auto relative">
-        
-        <button onClick={() => setOpenStockModal(false)} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600">✕</button>
-        
-        <h2 className="text-2xl font-bold text-[#D39BFF] mb-4 text-center">Aggiungi Nuovo Stock</h2>
-
-        {/* Form di Aggiunta Stock */}
-        <div className="space-y-2">
-          <input type="text" placeholder="Nome per Stock" className="w-full border p-2 rounded-xl" value={newStock.name} onChange={(e) => setNewStock((s) => ({ ...s, name: e.target.value }))} />
-          <select className="w-full border p-2 rounded-xl" value={newStock.type || ''} onChange={(e) => setNewStock((s) => ({ ...s, type: e.target.value }))}>
-            <option value="">Seleziona Categoria</option>
-            <option value="Cake">Cake</option>
-            <option value="Insalate">Insalate</option>
-            <option value="Speciali">Speciali</option>
-          </select>
-          <input type="number" placeholder="Stock porzioni da 2" className="w-full border p-2 rounded-xl" value={newStock.stock2} onChange={(e) => setNewStock((s) => ({ ...s, stock2: e.target.value }))} />
-          <input type="number" placeholder="Prezzo porzione da 2 (€)" className="w-full border p-2 rounded-xl" value={newStock.price2} onChange={(e) => setNewStock((s) => ({ ...s, price2: e.target.value }))} step="0.01" />
-          <input type="number" placeholder="Stock porzioni da 5" className="w-full border p-2 rounded-xl" value={newStock.stock5} onChange={(e) => setNewStock((s) => ({ ...s, stock5: e.target.value }))} />
-          <input type="number" placeholder="Prezzo porzione da 5 (€)" className="w-full border p-2 rounded-xl" value={newStock.price5} onChange={(e) => setNewStock((s) => ({ ...s, price5: e.target.value }))} step="0.01" />
-          
-          <button onClick={() => { handleAddStock(); setOpenStockModal(false); }} className="w-full bg-[#D39BFF] text-white py-2 rounded-xl font-semibold">
-            Salva Stock
-          </button>
-        </div>
-
-      </motion.div>
-    </motion.div>
-  )}
-</AnimatePresence>
-
+    
+  
     </div>
     </DashboardProvider>
 );
