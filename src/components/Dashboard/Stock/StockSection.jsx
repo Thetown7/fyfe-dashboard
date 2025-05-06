@@ -14,6 +14,7 @@ export default function StockSection({
     editingStock,
     handleUpdateStock,
     setEditingStock,
+    
   }) {
     return (
     <>
@@ -27,6 +28,8 @@ export default function StockSection({
 
  
  <StockList items={stockItems} onEdit={handleEditStock} />
+
+
 
 
 {/* Lista Stock */}
